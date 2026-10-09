@@ -1,0 +1,20 @@
+name: scratch-status
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  statuses: write
+  contents: read
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post commit status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          gh api "repos/${GITHUB_REPOSITORY}/statuses/${SHA}" \
+            -f state=success -f context=scratch/status \
+            -f description="scratch status posted by workflow"
